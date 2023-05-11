@@ -1,0 +1,472 @@
+openapi: 3.0.0
+servers:
+  - description: Authentication API
+    url: http://localhost:5600/auth/api/v1
+info:
+  description: Authentication Microservice
+  version: 1.0.0
+  title: Authentication Microservice
+paths:
+  /users:
+    get:
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      summary: fetches users
+      description: |
+        By passing in the JWT, users can be fetched.
+      responses:
+        '200':
+          description: An array of User objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+                    firstName:
+                      type: string
+                      example: Tharun
+                    lastName:
+                      type: string
+                      example: Vemula
+                    email:
+                      type: string
+                      example: tharunvind@gmail.com
+                    phoneNumber:
+                      type: string
+                    password:
+                      type: string
+                    role:
+                      type: string
+                    status:
+                      type: string
+                    isEmailVerified:
+                      type: boolean
+                    isPhoneNumberVerified:
+                      type: boolean
+        '401':
+          description: Access token is missing or invalid
+    post:
+      tags:
+        - users
+      summary: fecthes user objects that satisfy the given filter
+      requestBody:
+        description: filters on id, email, phoneNumber
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: array
+                  items:
+                    type: string
+                email:
+                  type: array
+                  items:
+                    type: string
+                phoneNumber:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: An array of User objects that matches the given filter
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+                    firstName:
+                      type: string
+                      example: Tharun
+                    lastName:
+                      type: string
+                      example: Vemula
+                    email:
+                      type: string
+                      example: tharunvind@gmail.com
+                    phoneNumber:
+                      type: string
+                    password:
+                      type: string
+                    role:
+                      type: string
+                    status:
+                      type: string
+                    isEmailVerified:
+                      type: boolean
+                    isPhoneNumberVerified:
+                      type: boolean
+  /users/profile:
+    get:
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      summary: fetches a single user
+      description: |
+        By passing in the JWT, user can be fetched.
+      responses:
+        '200':
+          description: An User object
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+                    firstName:
+                      type: string
+                      example: Tharun
+                    lastName:
+                      type: string
+                      example: Vemula
+                    email:
+                      type: string
+                      example: tharunvind@gmail.com
+                    phoneNumber:
+                      type: string
+                    password:
+                      type: string
+                    role:
+                      type: string
+                    status:
+                      type: string
+                    isEmailVerified:
+                      type: boolean
+                    isPhoneNumberVerified:
+                      type: boolean
+        '401':
+          description: Access token is missing or invalid
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: creates a single user
+      description: |
+        By passing in the payload, user can be created.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  example: d290f1ee-6c54-4b01-90e6-d701748f0851
+                firstName:
+                  type: string
+                  example: Tharun
+                lastName:
+                  type: string
+                  example: Vemula
+                email:
+                  type: string
+                  example: tharunvind@gmail.com
+                phoneNumber:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                status:
+                  type: string
+                isEmailVerified:
+                  type: boolean
+                isPhoneNumberVerified:
+                  type: boolean
+        description: create a user
+      responses:
+        '200':
+          description: JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+  /users/updateUser:
+    patch:
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      summary: updates a single user
+      description: |
+        By passing in the JWT, user can be updated.
+      responses:
+        '200':
+          description: An updated User object
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+                    firstName:
+                      type: string
+                      example: Tharun
+                    lastName:
+                      type: string
+                      example: Vemula
+                    email:
+                      type: string
+                      example: tharunvind@gmail.com
+                    phoneNumber:
+                      type: string
+                    password:
+                      type: string
+                    role:
+                      type: string
+                    status:
+                      type: string
+                    isEmailVerified:
+                      type: boolean
+                    isPhoneNumberVerified:
+                      type: boolean
+        '401':
+          description: Access token is missing or invalid
+  /users/deleteUser:
+    delete:
+      tags:
+        - users
+      security:
+        - bearerAuth: []
+      summary: deletes a single user
+      description: |
+        By passing in the JWT, user can be deleted.
+      responses:
+        '204':
+          description: Empty Response
+        '401':
+          description: Access token is missing or invalid
+  /login:
+    post:
+      tags:
+        - auth
+      summary: authenticates a user
+      description: |
+        By passing in the appropriate credentials, user is validated.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                phoneNumber:
+                  type: string
+                password:
+                  type: string
+        description: authenticates a user
+      responses:
+        '200':
+          description: JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+  /logout:
+    post:
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      summary: logs out a user
+      description: |
+        By passing in the JWT, user is logged out.
+      responses:
+        '204':
+          description: Empty Response
+        '401':
+          description: Access token is missing or invalid
+  /changePassword:
+    post:
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      summary: updates user password
+      description: |
+        By passing in the appropriate payload, password is updated.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+        description: updates user password
+      responses:
+        '200':
+          description: An updated User object
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+                    firstName:
+                      type: string
+                      example: Tharun
+                    lastName:
+                      type: string
+                      example: Vemula
+                    email:
+                      type: string
+                      example: tharunvind@gmail.com
+                    phoneNumber:
+                      type: string
+                    password:
+                      type: string
+                    role:
+                      type: string
+                    status:
+                      type: string
+                    isEmailVerified:
+                      type: boolean
+                    isPhoneNumberVerified:
+                      type: boolean
+        '401':
+          description: Access token is missing or invalid
+  /verification/authenticateEmail:
+    post:
+      tags:
+        - verification
+      summary: sends OTP to email/phone
+      description: |
+        By passing in the appropriate payload, OTP is sent to either email/phone
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                email:
+                  type: string
+                phoneNumber:
+                  type: string
+      responses:
+        '200':
+          description: OTP sent successfully
+  /verification/verifyEmail:
+    post:
+      tags:
+        - verification
+      summary: verifies OTP
+      description: |
+        By passing in the appropriate payload, OTP is verified
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otp:
+                  type: string
+                email:
+                  type: string
+                phoneNumber:
+                  type: string
+      responses:
+        '200':
+          description: JWT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        firstName:
+          type: string
+          example: Tharun
+        lastName:
+          type: string
+          example: Vemula
+        email:
+          type: string
+          example: tharunvind@gmail.com
+        phoneNumber:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+        isEmailVerified:
+          type: boolean
+        isPhoneNumberVerified:
+          type: boolean
+    AuthorizationCode:
+      type: object
+      required:
+        - otp
+      properties:
+        id:
+          type: string
+          format: uuid
+        otp:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+security:
+  - bearerAuth: []

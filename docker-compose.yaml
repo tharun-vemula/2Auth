@@ -1,0 +1,109 @@
+version: '3.8'
+volumes:
+  mongo-keys:
+  mongo-data-0:
+  mongo-data-1:
+  mongo-data-2:
+  mongo-data-3:
+  cache:
+
+services:
+  app:
+    build: .
+    links:
+      - redis
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+    environment:
+      - DATABASE_URL=mongodb://$MONGODB_USER:$MONGODB_PASSWORD@mongo-primary:27017/$MONGODB_DATABASE?authSource=admin
+      - REDIS_HOST=redis-server
+    dns:
+      - '8.8.8.8'
+    stdin_open: true
+    tty: true
+    networks:
+      - auth-app
+      - mongo-server
+      - redis-server
+      - common
+
+  mongo-keys:
+    image: depop/openssl-bats
+    volumes:
+      - mongo-keys:/mongo-conf
+    command: 'bash -c "openssl rand -base64 741 > /mongo-conf/mongodb-keyfile; chmod 600 /mongo-conf/mongodb-keyfile; chown 999 /mongo-conf/mongodb-keyfile"'
+
+  # Primary
+  mongo-primary:
+    image: mongo:4.2
+    volumes:
+      - mongo-keys:/opt/keyfile
+      - mongo-data-0:/data/db
+    env_file: ./.env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGODB_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGODB_PASSWORD
+    command: 'mongod --auth --keyFile /opt/keyfile/mongodb-keyfile --replSet authapp'
+    depends_on:
+      - mongo-keys
+    networks:
+      - mongo-server
+
+  # Worker 1
+  mongo-worker-1:
+    image: mongo:4.2
+    volumes:
+      - mongo-keys:/opt/keyfile
+      - mongo-data-1:/data/db
+    env_file: ./.env
+    command: 'mongod --auth --keyFile /opt/keyfile/mongodb-keyfile --replSet authapp'
+    depends_on:
+      - mongo-keys
+    networks:
+      - mongo-server
+
+  # Worker 2
+  mongo-worker-2:
+    image: mongo:4.2
+    volumes:
+      - mongo-keys:/opt/keyfile
+      - mongo-data-2:/data/db
+    env_file: ./.env
+    command: 'mongod --auth --keyFile /opt/keyfile/mongodb-keyfile --replSet authapp'
+    depends_on:
+      - mongo-keys
+    networks:
+      - mongo-server
+
+  # Worker 3
+  mongo-worker-3:
+    image: mongo:4.2
+    volumes:
+      - mongo-keys:/opt/keyfile
+      - mongo-data-3:/data/db
+    env_file: ./.env
+    command: 'mongod --auth --keyFile /opt/keyfile/mongodb-keyfile --replSet authapp'
+    depends_on:
+      - mongo-keys
+    networks:
+      - mongo-server
+
+  # TODO: Use volume for redis
+  redis:
+    image: redis:latest
+    container_name: redis-server
+    networks:
+      - redis-server
+    volumes:
+      - cache:/data
+    expose:
+      - 6379
+
+networks:
+  auth-app:
+  redis-server:
+  mongo-server:
+  common:
+    external: true
